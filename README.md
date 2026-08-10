@@ -141,7 +141,19 @@ flowchart LR
 4. Tap **Share via Phone** or **Copy**
 5. Paste into WhatsApp, iMessage, or wherever you chat
 
-### For developers (self-host)
+### Deploy live on Render (free — share a link with everyone)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/tgollogly/AnywhereMMS)
+
+1. Click the button above → sign in to Render → deploy (~2 min)
+2. Open your `https://anywheremms-xxxx.onrender.com` URL
+3. Share it — non-technical users just open the link on their phone
+
+📖 Full guide: [docs/DEPLOY_RENDER.md](docs/DEPLOY_RENDER.md) — free tier limits, commercial use, scaling
+
+**Render free tier is fine for personal/family use.** Heavy commercial traffic needs a paid plan (~$7+/mo) — see the deploy guide.
+
+### For developers (local)
 
 ```bash
 git clone https://github.com/tgollogly/AnywhereMMS.git
