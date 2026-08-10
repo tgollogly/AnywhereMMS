@@ -47,7 +47,7 @@ app.get('/view/:id', (req, res) => {
   const record = store.getImage(req.params.id);
   const viewUrl = `${config.baseUrl}/view/${req.params.id}`;
   const previewImage = record
-    ? `${config.baseUrl}/api/image/${req.params.id}/file`
+    ? `${config.baseUrl}/api/image/${req.params.id}/preview`
     : `${config.baseUrl}/assets/og-default.svg`;
 
   const html = `<!DOCTYPE html>
