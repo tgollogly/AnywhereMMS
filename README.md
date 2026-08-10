@@ -1,32 +1,70 @@
 <p align="center">
-  <img src="docs/banner.svg" alt="AnywhereMMS — Capture, Compress, Upload, SMS Link, View" width="800"/>
+  <img src="docs/hero.jpg" alt="AnywhereMMS — Snap, Compress, Share a Link" width="100%"/>
 </p>
 
 <h1 align="center">📸 AnywhereMMS</h1>
 
 <p align="center">
-  <strong>Take a photo. Compress it. Text a link. Done.</strong><br/>
-  Free, privacy-first photo sharing via SMS — no app required.
+  <strong>Snap a photo → get a link → paste it in any chat. Done.</strong><br/>
+  Free photo sharing for ordinary phone users — no app, no signup, no hassle.
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge" alt="MIT License"/>
-  <img src="https://img.shields.io/badge/node-%3E%3D18-green?style=for-the-badge&logo=node.js" alt="Node 18+"/>
-  <img src="https://img.shields.io/badge/privacy-first-6366f1?style=for-the-badge" alt="Privacy First"/>
-  <img src="https://img.shields.io/badge/SMS-free%20tier-06b6d4?style=for-the-badge" alt="Free SMS Tier"/>
-  <img src="https://img.shields.io/badge/compression-up%20to%2080%25-10b981?style=for-the-badge" alt="Compression"/>
+  <img src="https://img.shields.io/badge/works%20on-any%20phone-6366f1?style=for-the-badge" alt="Any Phone"/>
+  <img src="https://img.shields.io/badge/no%20app%20needed-10b981?style=for-the-badge" alt="No App"/>
+  <img src="https://img.shields.io/badge/link%20preview-WhatsApp%20%7C%20iMessage-06b6d4?style=for-the-badge" alt="Link Preview"/>
+  <img src="https://img.shields.io/badge/compression-up%20to%2080%25-f59e0b?style=for-the-badge" alt="Compression"/>
 </p>
+
+---
+
+## 📱 Why ordinary mobile users love this
+
+**You don't need to set up SMS APIs or install anything.** AnywhereMMS is built for real people with normal phones:
+
+| Problem today | How AnywhereMMS helps |
+|---------------|----------------------|
+| 📷 Photos are huge and eat mobile data | Auto-compresses before upload — saves up to **80% data** |
+| 💬 Sending big pics in WhatsApp/iMessage is slow | Get a **tiny link** instead of a 5 MB attachment |
+| 🔗 Google Drive / Dropbox links need login | Recipient **taps once** — no account, no app |
+| 📵 MMS doesn't work across all carriers | Works on **any phone** with a browser |
+| 🔒 You want privacy | Links **expire in 72 hours** — not stored forever |
+
+### 4 taps on your phone
+
+```
+1. Open AnywhereMMS in your browser
+2. Snap or upload a photo
+3. Tap "Create Share Link"
+4. Paste the link in WhatsApp, iMessage, SMS, or email
+```
+
+The recipient taps the link and **sees your photo instantly** — with a preview thumbnail in WhatsApp and iMessage.
+
+> **This is the easiest way.** You paste the link yourself using whatever app you already use. No server SMS setup required.
+
+<details>
+<summary><strong>📲 Optional: auto-send SMS from the server</strong></summary>
+
+If you're running your own instance with TextBelt or Twilio configured, the app can text the link for you. But for most people, **copy-paste the link** — it's simpler and works everywhere.
+</details>
 
 ---
 
 ## 🌟 Overview
 
-**AnywhereMMS** lets anyone capture or upload a photo, automatically compress it to save mobile data, upload it to a free self-hosted server, and send the recipient an **SMS with a private view link** — no follow-up required, no app to install.
+**AnywhereMMS** compresses your photo, hosts it temporarily on a free server, and gives you a **direct no-follow preview link** you can paste anywhere:
+
+- **WhatsApp** — shows image preview in chat
+- **iMessage** — rich link preview with thumbnail
+- **SMS** — recipient taps the URL
+- **Email / Messenger / Slack** — works everywhere
 
 | | |
 |---|---|
-| 📱 **For senders** | Open camera → snap → enter phone → send |
-| 📩 **For recipients** | Tap SMS link → view image instantly |
+| 📱 **For senders** | Snap → Get Link → Paste in your chat app |
+| 👀 **For recipients** | Tap link → See full image in browser |
 | 🔒 **Privacy** | Auto-expiring links, no tracking cookies |
 | 💸 **Cost** | Free & open-source (MIT) |
 
@@ -36,48 +74,46 @@
 
 | Feature | Description |
 |---------|-------------|
-| 📷 **Camera Capture** | Native browser camera API with file upload fallback |
-| 🗜️ **Dual Compression** | Client-side canvas + server-side Sharp (JPEG ~72 quality) |
-| 📤 **Free Hosting** | Self-hosted temporary storage with auto-cleanup |
-| 💬 **SMS Delivery** | TextBelt (free tier), Twilio, or console mode for dev |
-| 🔗 **Private Links** | UUID-based URLs with expiry & view limits |
-| 🍪 **Cookie Consent** | GDPR-friendly banner — no tracking cookies |
-| 📋 **Legal Pages** | Privacy Policy, Cookie Policy, Terms of Use |
-| ⚡ **Rate Limited** | Abuse protection built-in |
+| 🔗 **Direct Share Links** | Primary flow — copy & paste, no SMS API needed |
+| 📷 **Camera Capture** | Works in mobile browsers + file upload fallback |
+| 🗜️ **Dual Compression** | Client + server compression saves mobile data |
+| 👁️ **Link Previews** | Open Graph tags for WhatsApp/iMessage thumbnails |
+| 💬 **Auto-SMS (optional)** | TextBelt / Twilio for hands-free sending |
+| 🔐 **Private & Expiring** | UUID links, 72h TTL, view limits |
+| 🍪 **Cookie Consent** | No tracking — preference stored locally only |
+| 📋 **Legal Pages** | Privacy, Cookie, and Terms pages included |
 
 ---
 
 ## 🔄 How It Works
 
 ```mermaid
-sequenceDiagram
-    participant S as Sender
-    participant App as AnywhereMMS
-    participant Server as Free Server
-    participant SMS as SMS Provider
-    participant R as Recipient
+flowchart LR
+    A[📷 Snap Photo] --> B[🗜️ Compress]
+    B --> C[☁️ Upload Free]
+    C --> D[🔗 Get Link]
+    D --> E[💬 Paste in WhatsApp / iMessage / SMS]
+    E --> F[👀 Recipient Taps → Sees Image]
+    F --> G[🗑️ Auto-delete after 72h]
 
-    S->>App: Take / upload photo
-    App->>App: Compress (client-side)
-    App->>Server: Upload compressed image
-    Server->>Server: Re-compress (Sharp)
-    Server->>SMS: Send SMS with view link
-    SMS->>R: 📩 "View your image: https://..."
-    R->>Server: Open link
-    Server->>R: Display image
-    Note over Server: Auto-delete after 72h
+    style A fill:#6366f1,color:#fff
+    style D fill:#06b6d4,color:#fff
+    style F fill:#10b981,color:#fff
 ```
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### For users (just want to share photos)
 
-- **Node.js** 18 or later
-- An SMS provider key (optional — `console` mode logs to terminal)
+1. Open the site on your phone browser
+2. Allow camera access (or upload from gallery)
+3. Tap **Create Share Link**
+4. Tap **Share via Phone** or **Copy**
+5. Paste into WhatsApp, iMessage, or wherever you chat
 
-### Installation
+### For developers (self-host)
 
 ```bash
 git clone https://github.com/tgollogly/AnywhereMMS.git
@@ -87,55 +123,19 @@ cp .env.example .env
 npm start
 ```
 
-Open **http://localhost:3000** in your browser.
+Open **http://localhost:3000** — link sharing works immediately. SMS is optional.
 
 ### Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `3000` | Server port |
-| `BASE_URL` | `http://localhost:3000` | Public URL for SMS links |
+| `BASE_URL` | `http://localhost:3000` | Public URL (used in share links) |
 | `IMAGE_TTL_HOURS` | `72` | Hours before images expire |
 | `MAX_VIEWS` | `10` | Max views per image |
-| `SMS_PROVIDER` | `console` | `console`, `textbelt`, or `twilio` |
-| `TEXTBELT_KEY` | `textbelt` | TextBelt API key (free: 1 SMS/day) |
-| `MAX_SENDS_PER_HOUR` | `5` | Rate limit per IP |
+| `SMS_PROVIDER` | `console` | Only needed for auto-SMS: `textbelt` or `twilio` |
 
-### SMS Providers
-
-<details>
-<summary><strong>🆓 TextBelt (Free Tier)</strong></summary>
-
-Set in `.env`:
-
-```env
-SMS_PROVIDER=textbelt
-TEXTBELT_KEY=textbelt
-```
-
-Free tier: 1 SMS/day to US numbers. See [textbelt.com](https://textbelt.com).
-</details>
-
-<details>
-<summary><strong>📞 Twilio</strong></summary>
-
-```env
-SMS_PROVIDER=twilio
-TWILIO_ACCOUNT_SID=your_sid
-TWILIO_AUTH_TOKEN=your_token
-TWILIO_FROM_NUMBER=+1234567890
-```
-</details>
-
-<details>
-<summary><strong>🖥️ Console (Development)</strong></summary>
-
-```env
-SMS_PROVIDER=console
-```
-
-SMS content is printed to the server log — perfect for local testing.
-</details>
+> **Important:** Set `BASE_URL` to your public domain in production so share links work on phones.
 
 ---
 
@@ -143,48 +143,24 @@ SMS content is printed to the server log — perfect for local testing.
 
 ```
 AnywhereMMS/
-├── server/
-│   ├── index.js          # Express app entry
-│   ├── config.js         # Environment config
-│   ├── store.js          # Image metadata & cleanup
-│   ├── sms.js            # SMS provider abstraction
-│   └── routes/api.js     # Upload, send, view APIs
-├── public/
-│   ├── index.html        # Send page (camera + form)
-│   ├── view.html         # Recipient view page
-│   ├── privacy.html      # Privacy Policy
-│   ├── cookies.html      # Cookie Policy
-│   ├── terms.html        # Terms of Use
-│   ├── css/styles.css    # Design system
-│   └── js/               # Client logic
-├── docs/
-│   └── banner.svg        # README banner graphic
+├── docs/hero.jpg         # README hero banner
+├── server/               # Express API (share + optional SMS)
+├── public/               # Mobile-friendly web UI
+│   ├── index.html        # Snap → Share Link flow
+│   └── js/app.js         # Camera, compress, copy, native share
 ├── LICENSE               # MIT + disclaimer
-└── .env.example
+└── README.md
 ```
 
 ---
 
 ## 🔐 Privacy & Legal
 
-> **Your photos, your control.** Images are compressed, stored temporarily, and automatically deleted.
+- **Privacy Policy:** `/privacy.html`
+- **Cookie Policy:** `/cookies.html` — no tracking cookies
+- **Terms of Use:** `/terms.html`
 
-- **Privacy Policy:** [/privacy.html](public/privacy.html) or hosted at `/privacy.html`
-- **Cookie Policy:** [/cookies.html](public/cookies.html)
-- **Terms of Use:** [/terms.html](public/terms.html)
-
-### Cookie Notice
-
-On first visit, users see a cookie consent banner. We only store a local preference — **no tracking, no analytics, no ads**.
-
-### Data Retention
-
-| Data | Retention |
-|------|-----------|
-| Uploaded images | 72 hours (configurable) |
-| Phone numbers | Not stored after SMS send |
-| Server logs | Up to 30 days |
-| Cookie preference | Until browser storage cleared |
+Photos are compressed, stored temporarily, and **automatically deleted**. Phone numbers are **not stored** when you use the link-sharing flow.
 
 ---
 
@@ -192,53 +168,13 @@ On first visit, users see a cookie consent banner. We only store a local prefere
 
 > **AnywhereMMS is provided "AS IS" without warranty.**
 
-- You are responsible for obtaining **recipient consent** before sending SMS messages.
-- Standard **carrier SMS rates** may apply.
-- SMS delivery depends on **third-party providers** — delivery is not guaranteed.
-- Do not use for **illegal, harmful, or abusive** content.
-- The author (**tgollogly**) retains copyright; MIT license allows free use, modification, and distribution with attribution.
-
-See [LICENSE](LICENSE) for full terms.
-
----
-
-## 🎨 Design
-
-Built with a modern dark theme:
-
-| Color | Hex | Usage |
-|-------|-----|-------|
-| Primary | `#6366f1` | Buttons, accents |
-| Accent | `#06b6d4` | Links, highlights |
-| Success | `#10b981` | Compression savings |
-| Background | `#0f172a` | Page background |
-| Card | `#1e293b` | Content cards |
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! Please open an issue or PR on GitHub.
-
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-```
-MIT License — Copyright (c) 2026 tgollogly
-```
-
-This is **original code by tgollogly**, released under the [MIT License](LICENSE). You may use, modify, and distribute it freely with attribution.
+- Only share images you have the right to share, with recipient consent.
+- Links expire automatically — not intended for permanent storage.
+- Copyright © 2026 **tgollogly** — MIT licensed. See [LICENSE](LICENSE).
 
 ---
 
 <p align="center">
   Made with ❤️ by <a href="https://github.com/tgollogly">tgollogly</a><br/>
-  <sub>Send photos anywhere. No app. No hassle.</sub>
+  <sub>Snap it. Link it. Share it anywhere.</sub>
 </p>

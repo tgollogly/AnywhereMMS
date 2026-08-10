@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="AnywhereMMS — Take a photo, compress it, and send via SMS with a private view link. Free, fast, and privacy-first.">
+  <meta name="description" content="AnywhereMMS — Snap a photo, get a private preview link, paste it in WhatsApp, iMessage, or SMS. Free, compressed, no app needed.">
   <meta name="robots" content="index, follow">
-  <title>AnywhereMMS — Send Photos via SMS</title>
+  <title>AnywhereMMS — Share Photos via Link</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -32,9 +32,30 @@
 
   <main>
     <section class="hero container">
-      <span class="hero-badge">✨ Free · Private · No App Required</span>
-      <h1>Send Photos Anywhere via SMS</h1>
-      <p>Capture or upload a photo, we compress it to save data, upload to our free server, and text the recipient a private link to view their image.</p>
+      <span class="hero-badge">✨ Free · Private · Works on Any Phone</span>
+      <h1>Snap a Photo, Share a Link</h1>
+      <p>Take a picture, we compress it and give you a direct preview link. Paste it in WhatsApp, iMessage, SMS, or anywhere — the recipient taps once and sees the image. No app, no signup.</p>
+    </section>
+
+    <section class="container">
+      <div class="mobile-steps">
+        <div class="mobile-step">
+          <div class="step-num">1</div>
+          <p><strong>Snap</strong> a photo on your phone</p>
+        </div>
+        <div class="mobile-step">
+          <div class="step-num">2</div>
+          <p><strong>Get link</strong> — compressed &amp; hosted free</p>
+        </div>
+        <div class="mobile-step">
+          <div class="step-num">3</div>
+          <p><strong>Paste</strong> in WhatsApp, iMessage, or SMS</p>
+        </div>
+        <div class="mobile-step">
+          <div class="step-num">4</div>
+          <p><strong>They tap</strong> — image preview opens instantly</p>
+        </div>
+      </div>
     </section>
 
     <section id="send" class="camera-section container">
@@ -80,18 +101,43 @@
         </div>
 
         <div id="sendSection" class="hidden" style="margin-top: 1.5rem;">
-          <form id="sendForm">
-            <div class="form-group">
-              <label for="phone">Recipient Phone Number</label>
-              <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567" required autocomplete="tel">
-              <p class="form-hint">Include country code (e.g. +1 for US). Standard SMS rates may apply to the recipient.</p>
+          <div class="mode-tabs">
+            <button type="button" class="mode-tab active" data-mode="link">🔗 Get Link (Easiest)</button>
+            <button type="button" class="mode-tab" data-mode="sms">📱 Auto-Send SMS</button>
+          </div>
+
+          <div id="linkMode">
+            <p class="form-hint" style="margin-bottom: 1rem;">Best for most people — copy the link and paste it wherever you already chat (WhatsApp, iMessage, Messenger, email).</p>
+            <button type="button" id="shareLinkBtn" class="btn btn-primary btn-lg">Create Share Link</button>
+          </div>
+
+          <div id="smsMode" class="hidden">
+            <form id="sendForm">
+              <div class="form-group">
+                <label for="phone">Recipient Phone Number</label>
+                <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567" autocomplete="tel">
+                <p class="form-hint">Optional — we can text the link for you. Requires SMS provider setup on the server.</p>
+              </div>
+              <div class="form-group">
+                <label for="message">Optional Message</label>
+                <textarea id="message" name="message" placeholder="Hey! Here's that photo you asked for…" maxlength="160"></textarea>
+              </div>
+              <button type="submit" id="sendBtn" class="btn btn-secondary btn-lg">Send Link via SMS</button>
+            </form>
+          </div>
+
+          <div id="linkResult" class="link-result hidden">
+            <label>✅ Your private preview link (paste anywhere)</label>
+            <div class="link-box">
+              <input type="text" id="shareUrl" readonly>
+              <button type="button" id="copyLinkBtn" class="btn btn-secondary">Copy</button>
             </div>
-            <div class="form-group">
-              <label for="message">Optional Message</label>
-              <textarea id="message" name="message" placeholder="Hey! Here's that photo you asked for…" maxlength="160"></textarea>
+            <div class="share-actions">
+              <button type="button" id="nativeShareBtn" class="btn btn-primary">Share via Phone</button>
+              <button type="button" id="newPhotoBtn" class="btn btn-secondary">New Photo</button>
             </div>
-            <button type="submit" id="sendBtn" class="btn btn-primary btn-lg">Send Photo via SMS</button>
-          </form>
+            <p class="form-hint" style="margin-top: 0.75rem;">Link shows an image preview in WhatsApp &amp; iMessage. Expires in 72 hours. No account needed.</p>
+          </div>
         </div>
 
         <div id="status" class="status"></div>
@@ -105,9 +151,14 @@
     <section id="features" class="container">
       <div class="features">
         <div class="feature-card">
+          <div class="feature-icon">🔗</div>
+          <h3>Direct Preview Links</h3>
+          <p>Copy &amp; paste a link — recipients see the image instantly. Works in any chat app.</p>
+        </div>
+        <div class="feature-card">
           <div class="feature-icon">📱</div>
-          <h3>SMS Delivery</h3>
-          <p>Recipient gets a text with a direct link — no app download needed.</p>
+          <h3>Auto-SMS (Optional)</h3>
+          <p>Or let the server text the link for you if you prefer hands-free sending.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">🗜️</div>
