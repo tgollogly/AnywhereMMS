@@ -1,0 +1,25 @@
+# Render Blueprint — deploy AnywhereMMS with one click
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: anywheremms
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SMS_PROVIDER
+        value: console
+      - key: IMAGE_TTL_HOURS
+        value: 72
+      - key: MAX_VIEWS
+        value: 10
+      - key: MAX_SENDS_PER_HOUR
+        value: 5
+      - key: BASE_URL
+        sync: false
