@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AnywhereMMS — Take a photo, compress it, and send via SMS with a private view link. Free, fast, and privacy-first.">
+  <meta name="robots" content="index, follow">
+  <title>AnywhereMMS — Send Photos via SMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo">
+        <span class="logo-icon">📸</span>
+        AnywhereMMS
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#send">Send</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="/privacy.html">Privacy</a></li>
+          <li><a href="/cookies.html">Cookies</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <span class="hero-badge">✨ Free · Private · No App Required</span>
+      <h1>Send Photos Anywhere via SMS</h1>
+      <p>Capture or upload a photo, we compress it to save data, upload to our free server, and text the recipient a private link to view their image.</p>
+    </section>
+
+    <section id="send" class="camera-section container">
+      <div class="card">
+        <h2 class="card-title">📷 Take or Upload a Photo</h2>
+        <p class="card-subtitle">Images are compressed before upload to minimize mobile data usage.</p>
+
+        <div class="camera-wrapper">
+          <video id="cameraPreview" autoplay playsinline muted></video>
+          <img id="capturedPreview" alt="Captured photo preview">
+          <div id="cameraPlaceholder" class="camera-placeholder">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.827 6.828a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Tap "Open Camera" or upload a photo</span>
+          </div>
+        </div>
+
+        <div class="camera-controls">
+          <button type="button" id="startCameraBtn" class="btn btn-primary">Open Camera</button>
+          <button type="button" id="captureBtn" class="btn btn-secondary" disabled>Capture</button>
+          <button type="button" id="uploadBtn" class="btn btn-secondary">Upload Photo</button>
+          <button type="button" id="retakeBtn" class="btn btn-danger hidden">Retake</button>
+          <input type="file" id="fileInput" accept="image/*" capture="environment" hidden>
+        </div>
+
+        <div id="compressionBar" class="compression-bar hidden">
+          <div class="stat-row">
+            <span>Original size</span>
+            <span id="originalSize">—</span>
+          </div>
+          <div class="stat-row">
+            <span>Compressed size</span>
+            <span id="compressedSize">—</span>
+          </div>
+          <div class="stat-row saved">
+            <span>Data saved</span>
+            <span id="savedPercent">—</span>
+          </div>
+          <div class="progress-track">
+            <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div id="sendSection" class="hidden" style="margin-top: 1.5rem;">
+          <form id="sendForm">
+            <div class="form-group">
+              <label for="phone">Recipient Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567" required autocomplete="tel">
+              <p class="form-hint">Include country code (e.g. +1 for US). Standard SMS rates may apply to the recipient.</p>
+            </div>
+            <div class="form-group">
+              <label for="message">Optional Message</label>
+              <textarea id="message" name="message" placeholder="Hey! Here's that photo you asked for…" maxlength="160"></textarea>
+            </div>
+            <button type="submit" id="sendBtn" class="btn btn-primary btn-lg">Send Photo via SMS</button>
+          </form>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <div class="privacy-notice-inline" style="margin-top: 1.5rem;">
+          🔒 <strong>Privacy notice:</strong> Photos are stored temporarily (default 72 hours), compressed, and shared only via the link you send. We do not sell your data. See our <a href="/privacy.html">Privacy Policy</a>.
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="container">
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>SMS Delivery</h3>
+          <p>Recipient gets a text with a direct link — no app download needed.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🗜️</div>
+          <h3>Smart Compression</h3>
+          <p>Client &amp; server compression saves up to 80% mobile data.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <h3>Private Links</h3>
+          <p>Unique, unguessable URLs that expire automatically.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💸</div>
+          <h3>Free to Use</h3>
+          <p>Open-source and free. Self-host or use our free SMS tier.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <ul class="footer-links">
+        <li><a href="/privacy.html">Privacy Policy</a></li>
+        <li><a href="/cookies.html">Cookie Policy</a></li>
+        <li><a href="/terms.html">Terms of Use</a></li>
+        <li><a href="https://github.com/tgollogly/AnywhereMMS" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+      <p class="footer-copy">© 2026 tgollogly. Licensed under MIT. See <a href="/LICENSE">LICENSE</a>.</p>
+      <p class="disclaimer">
+        <strong>Disclaimer:</strong> AnywhereMMS is provided "as is" without warranty. You are responsible for ensuring you have consent to send images to recipients. SMS delivery depends on third-party providers. Images are automatically deleted after the configured retention period.
+      </p>
+    </div>
+  </footer>
+
+  <div id="cookieBanner" class="cookie-banner">
+    <div class="cookie-inner">
+      <p>🍪 We use essential local storage for cookie preferences only. No tracking cookies. See our <a href="/cookies.html">Cookie Policy</a>.</p>
+      <div class="cookie-actions">
+        <button id="declineCookies" class="btn btn-secondary">Decline</button>
+        <button id="acceptCookies" class="btn btn-primary">Accept</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/compress.js"></script>
+  <script src="/js/cookies.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
