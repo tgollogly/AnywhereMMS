@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="docs/hero.jpg" alt="AnywhereMMS — Snap, Compress, Share a Link" width="100%"/>
+  <a href="https://github.com/tgollogly/AnywhereMMS">
+    <img src="https://raw.githubusercontent.com/tgollogly/AnywhereMMS/main/docs/hero.jpg" alt="AnywhereMMS — Snap, Compress, Share a Link" width="900"/>
+  </a>
 </p>
 
 <h1 align="center">📸 AnywhereMMS</h1>
