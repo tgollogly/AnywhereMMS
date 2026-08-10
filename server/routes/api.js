@@ -19,13 +19,56 @@ const upload = multer({
   },
 });
 
-const sendLimiter = rateLimit({
+const shareLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: config.maxSendsPerHour,
-  message: { error: 'Too many sends. Please try again later.' },
+  message: { error: 'Too many uploads. Please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+async function processAndStoreImage(buffer, originalSize) {
+  const id = uuidv4();
+  const filename = `${id}.jpg`;
+  const filePath = path.join(config.uploadDir, filename);
+
+  const compressed = await sharp(buffer)
+    .rotate()
+    .resize(1280, 1280, { fit: 'inside', withoutEnlargement: true })
+    .jpeg({ quality: 72, mozjpeg: true })
+    .toBuffer();
+
+  const compressedSize = compressed.length;
+  await sharp(compressed).toFile(filePath);
+
+  const expiresAt = new Date(Date.now() + config.imageTtlHours * 60 * 60 * 1000).toISOString();
+  const viewUrl = `${config.baseUrl}/view/${id}`;
+  const previewUrl = `${config.baseUrl}/api/image/${id}/file`;
+
+  store.saveImage(id, {
+    id,
+    filename,
+    createdAt: new Date().toISOString(),
+    expiresAt,
+    views: 0,
+    maxViews: config.maxViews,
+    mimeType: 'image/jpeg',
+    originalSize,
+    compressedSize,
+  });
+
+  return {
+    id,
+    viewUrl,
+    previewUrl,
+    expiresAt,
+    compression: {
+      originalBytes: originalSize,
+      compressedBytes: compressedSize,
+      savedPercent: Math.round((1 - compressedSize / originalSize) * 100),
+    },
+  };
+}
 
 function normalizePhone(raw) {
   const digits = raw.replace(/\D/g, '');
@@ -35,7 +78,28 @@ function normalizePhone(raw) {
   throw new Error('Invalid phone number. Use E.164 format (e.g. +15551234567).');
 }
 
-router.post('/send', sendLimiter, upload.single('photo'), async (req, res) => {
+/** Primary flow: upload photo → get a direct preview link (no SMS API needed). */
+router.post('/share', shareLimiter, upload.single('photo'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No photo provided.' });
+    }
+
+    const result = await processAndStoreImage(req.file.buffer, req.file.size);
+
+    res.json({
+      success: true,
+      ...result,
+      shareText: `📸 Someone shared a photo with you!\n\nView it here: ${result.viewUrl}\n\nLink expires in ${config.imageTtlHours} hours.`,
+    });
+  } catch (err) {
+    console.error('Share error:', err);
+    res.status(500).json({ error: err.message || 'Failed to create share link.' });
+  }
+});
+
+/** Optional: auto-send the preview link via SMS. */
+router.post('/send', shareLimiter, upload.single('photo'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No photo provided.' });
@@ -53,57 +117,19 @@ router.post('/send', sendLimiter, upload.single('photo'), async (req, res) => {
       return res.status(400).json({ error: err.message });
     }
 
-    const id = uuidv4();
-    const filename = `${id}.jpg`;
-    const filePath = path.join(config.uploadDir, filename);
-
-    const compressed = await sharp(req.file.buffer)
-      .rotate()
-      .resize(1280, 1280, { fit: 'inside', withoutEnlargement: true })
-      .jpeg({ quality: 72, mozjpeg: true })
-      .toBuffer();
-
-    const originalSize = req.file.size;
-    const compressedSize = compressed.length;
-
-    await sharp(compressed).toFile(filePath);
-
-    const expiresAt = new Date(Date.now() + config.imageTtlHours * 60 * 60 * 1000).toISOString();
-    const viewUrl = `${config.baseUrl}/view/${id}`;
-
-    store.saveImage(id, {
-      id,
-      filename,
-      createdAt: new Date().toISOString(),
-      expiresAt,
-      views: 0,
-      maxViews: config.maxViews,
-      mimeType: 'image/jpeg',
-      originalSize,
-      compressedSize,
-    });
+    const result = await processAndStoreImage(req.file.buffer, req.file.size);
 
     const smsBody = [
       message?.trim() || 'Someone shared a photo with you on AnywhereMMS 📸',
       '',
-      `View your image: ${viewUrl}`,
+      `View your image: ${result.viewUrl}`,
       '',
       `Link expires in ${config.imageTtlHours}h. No account needed.`,
     ].join('\n');
 
     await sendSms(normalizedPhone, smsBody);
 
-    res.json({
-      success: true,
-      id,
-      viewUrl,
-      expiresAt,
-      compression: {
-        originalBytes: originalSize,
-        compressedBytes: compressedSize,
-        savedPercent: Math.round((1 - compressedSize / originalSize) * 100),
-      },
-    });
+    res.json({ success: true, ...result });
   } catch (err) {
     console.error('Send error:', err);
     res.status(500).json({ error: err.message || 'Failed to send photo.' });
@@ -131,7 +157,8 @@ router.get('/image/:id', (req, res) => {
     expiresAt: record.expiresAt,
     views: record.views,
     maxViews: record.maxViews,
-    imageUrl: `/uploads/${record.filename}`,
+    viewUrl: `${config.baseUrl}/view/${record.id}`,
+    imageUrl: `/api/image/${record.id}/file`,
     compression: {
       originalBytes: record.originalSize,
       compressedBytes: record.compressedSize,

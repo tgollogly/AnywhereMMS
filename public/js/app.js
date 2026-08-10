@@ -1,10 +1,10 @@
 /**
- * AnywhereMMS — Main send flow: camera capture, compress, upload, SMS.
+ * AnywhereMMS — Camera capture, compress, share via direct link or optional SMS.
  */
 
 let stream = null;
 let capturedBlob = null;
-let compressionStats = null;
+let lastShareText = '';
 
 const els = {};
 
@@ -13,9 +13,8 @@ function $(id) {
 }
 
 function showStatus(message, type = 'info') {
-  const status = els.status;
-  status.textContent = message;
-  status.className = `status show status-${type}`;
+  els.status.textContent = message;
+  els.status.className = `status show status-${type}`;
 }
 
 function hideStatus() {
@@ -35,8 +34,8 @@ async function startCamera() {
     els.placeholder.style.display = 'none';
     els.captureBtn.disabled = false;
     els.startCameraBtn.textContent = 'Restart Camera';
-  } catch (err) {
-    showStatus('Camera access denied or unavailable. You can upload a photo instead.', 'error');
+  } catch {
+    showStatus('Camera unavailable — tap Upload Photo instead.', 'error');
     els.fileInput.click();
   }
 }
@@ -72,18 +71,17 @@ async function handleFileSelect(e) {
 }
 
 async function processCapturedImage() {
-  showStatus('Compressing image to save data…', 'info');
+  showStatus('Compressing to save your mobile data…', 'info');
 
   const result = await AnywhereMMS.compressImage(capturedBlob);
   capturedBlob = result.blob;
-  compressionStats = result;
 
-  const url = URL.createObjectURL(capturedBlob);
-  els.capturedPreview.src = url;
+  els.capturedPreview.src = URL.createObjectURL(capturedBlob);
   els.capturedPreview.style.display = 'block';
 
   updateCompressionUI(result);
   els.sendSection.classList.remove('hidden');
+  els.linkResult.classList.add('hidden');
   els.retakeBtn.classList.remove('hidden');
   hideStatus();
 }
@@ -97,19 +95,101 @@ function updateCompressionUI({ originalSize, compressedSize }) {
   els.compressionBar.classList.remove('hidden');
 }
 
+function resetShareUI() {
+  els.linkResult.classList.add('hidden');
+  els.shareUrl.value = '';
+  lastShareText = '';
+}
+
 function retake() {
   capturedBlob = null;
-  compressionStats = null;
   els.capturedPreview.style.display = 'none';
   els.capturedPreview.src = '';
   els.sendSection.classList.add('hidden');
   els.retakeBtn.classList.add('hidden');
   els.compressionBar.classList.add('hidden');
   els.fileInput.value = '';
+  resetShareUI();
+  hideStatus();
   startCamera();
 }
 
-async function sendPhoto(e) {
+function setMode(mode) {
+  els.modeTabs.forEach((tab) => {
+    tab.classList.toggle('active', tab.dataset.mode === mode);
+  });
+  els.linkMode.classList.toggle('hidden', mode !== 'link');
+  els.smsMode.classList.toggle('hidden', mode !== 'sms');
+}
+
+async function uploadPhoto(endpoint) {
+  const formData = new FormData();
+  formData.append('photo', capturedBlob, 'photo.jpg');
+  if (endpoint === '/api/send') {
+    formData.append('phone', els.phone.value.trim());
+    formData.append('message', els.message.value.trim());
+  }
+  const res = await fetch(endpoint, { method: 'POST', body: formData });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Upload failed');
+  return data;
+}
+
+async function createShareLink() {
+  if (!capturedBlob) {
+    showStatus('Please capture or upload a photo first.', 'error');
+    return;
+  }
+
+  els.shareLinkBtn.disabled = true;
+  els.shareLinkBtn.textContent = 'Creating link…';
+  showStatus('Uploading compressed photo…', 'info');
+
+  try {
+    const data = await uploadPhoto('/api/share');
+    lastShareText = data.shareText;
+    els.shareUrl.value = data.viewUrl;
+    els.linkResult.classList.remove('hidden');
+    els.linkMode.classList.add('hidden');
+
+    const saved = data.compression?.savedPercent ?? 0;
+    showStatus(`Link ready! Saved ~${saved}% data. Copy and paste it anywhere.`, 'success');
+  } catch (err) {
+    showStatus(err.message, 'error');
+  } finally {
+    els.shareLinkBtn.disabled = false;
+    els.shareLinkBtn.textContent = 'Create Share Link';
+  }
+}
+
+async function copyLink() {
+  try {
+    await navigator.clipboard.writeText(els.shareUrl.value);
+    showStatus('Link copied! Paste it in WhatsApp, iMessage, or SMS.', 'success');
+  } catch {
+    els.shareUrl.select();
+    document.execCommand('copy');
+    showStatus('Link copied!', 'success');
+  }
+}
+
+async function nativeShare() {
+  if (!navigator.share) {
+    await copyLink();
+    return;
+  }
+  try {
+    await navigator.share({
+      title: 'Photo for you',
+      text: lastShareText || 'Someone shared a photo with you!',
+      url: els.shareUrl.value,
+    });
+  } catch (err) {
+    if (err.name !== 'AbortError') showStatus('Share cancelled.', 'info');
+  }
+}
+
+async function sendSms(e) {
   e.preventDefault();
 
   if (!capturedBlob) {
@@ -119,38 +199,25 @@ async function sendPhoto(e) {
 
   const phone = els.phone.value.trim();
   if (!phone) {
-    showStatus('Please enter a recipient phone number.', 'error');
+    showStatus('Enter a phone number, or use Get Link instead.', 'error');
     return;
   }
 
   els.sendBtn.disabled = true;
   els.sendBtn.textContent = 'Sending…';
-  showStatus('Uploading and sending SMS…', 'info');
-
-  const formData = new FormData();
-  formData.append('photo', capturedBlob, 'photo.jpg');
-  formData.append('phone', phone);
-  formData.append('message', els.message.value.trim());
+  showStatus('Uploading and texting the link…', 'info');
 
   try {
-    const res = await fetch('/api/send', { method: 'POST', body: formData });
-    const data = await res.json();
-
-    if (!res.ok) throw new Error(data.error || 'Send failed');
-
-    const serverSaved = data.compression?.savedPercent ?? 0;
-    showStatus(
-      `Photo sent! Link: ${data.viewUrl} — Total data saved: ~${serverSaved}% after server compression.`,
-      'success'
-    );
-
+    const data = await uploadPhoto('/api/send');
+    els.shareUrl.value = data.viewUrl;
+    els.linkResult.classList.remove('hidden');
+    showStatus(`SMS sent! Link also copied below: ${data.viewUrl}`, 'success');
     els.sendForm.reset();
-    setTimeout(retake, 3000);
   } catch (err) {
     showStatus(err.message, 'error');
   } finally {
     els.sendBtn.disabled = false;
-    els.sendBtn.textContent = 'Send Photo via SMS';
+    els.sendBtn.textContent = 'Send Link via SMS';
   }
 }
 
@@ -173,14 +240,27 @@ function init() {
   els.compressedSize = $('compressedSize');
   els.savedPercent = $('savedPercent');
   els.progressFill = $('progressFill');
+  els.linkMode = $('linkMode');
+  els.smsMode = $('smsMode');
+  els.linkResult = $('linkResult');
+  els.shareUrl = $('shareUrl');
+  els.shareLinkBtn = $('shareLinkBtn');
+  els.modeTabs = document.querySelectorAll('.mode-tab');
 
   els.startCameraBtn.addEventListener('click', startCamera);
   els.captureBtn.addEventListener('click', capturePhoto);
   els.retakeBtn.addEventListener('click', retake);
   els.fileInput.addEventListener('change', handleFileSelect);
-  els.sendForm.addEventListener('submit', sendPhoto);
-
+  els.sendForm.addEventListener('submit', sendSms);
+  els.shareLinkBtn.addEventListener('click', createShareLink);
+  $('copyLinkBtn')?.addEventListener('click', copyLink);
+  $('nativeShareBtn')?.addEventListener('click', nativeShare);
+  $('newPhotoBtn')?.addEventListener('click', retake);
   $('uploadBtn')?.addEventListener('click', () => els.fileInput.click());
+
+  els.modeTabs.forEach((tab) => {
+    tab.addEventListener('click', () => setMode(tab.dataset.mode));
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);
