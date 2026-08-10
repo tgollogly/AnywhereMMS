@@ -35,7 +35,7 @@ async function startCamera() {
     els.captureBtn.disabled = false;
     els.startCameraBtn.textContent = 'Restart Camera';
   } catch {
-    showStatus('Camera unavailable — tap Upload Photo instead.', 'error');
+    showStatus('Camera unavailable — tap Choose from Gallery instead.', 'error');
     els.fileInput.click();
   }
 }
@@ -81,8 +81,10 @@ async function processCapturedImage() {
 
   updateCompressionUI(result);
   els.sendSection.classList.remove('hidden');
+  els.linkMode.classList.remove('hidden');
   els.linkResult.classList.add('hidden');
   els.retakeBtn.classList.remove('hidden');
+  setMode('link');
   hideStatus();
 }
 
@@ -106,10 +108,12 @@ function retake() {
   els.capturedPreview.style.display = 'none';
   els.capturedPreview.src = '';
   els.sendSection.classList.add('hidden');
+  els.linkMode.classList.remove('hidden');
   els.retakeBtn.classList.add('hidden');
   els.compressionBar.classList.add('hidden');
   els.fileInput.value = '';
   resetShareUI();
+  setMode('link');
   hideStatus();
   startCamera();
 }
@@ -130,7 +134,12 @@ async function uploadPhoto(endpoint) {
     formData.append('message', els.message.value.trim());
   }
   const res = await fetch(endpoint, { method: 'POST', body: formData });
-  const data = await res.json();
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error('Server error. Please try again in a moment.');
+  }
   if (!res.ok) throw new Error(data.error || 'Upload failed');
   return data;
 }
@@ -185,7 +194,8 @@ async function nativeShare() {
       url: els.shareUrl.value,
     });
   } catch (err) {
-    if (err.name !== 'AbortError') showStatus('Share cancelled.', 'info');
+    if (err.name === 'AbortError') return;
+    showStatus('Could not share. Try Copy instead.', 'error');
   }
 }
 

@@ -3,7 +3,8 @@
  */
 
 async function loadImage() {
-  const id = window.location.pathname.split('/view/')[1];
+  const rawId = window.location.pathname.split('/view/')[1] || '';
+  const id = rawId.split('?')[0].split('#')[0].replace(/\/$/, '');
   if (!id) {
     showError('Invalid link.');
     return;

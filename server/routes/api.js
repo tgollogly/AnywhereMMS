@@ -136,20 +136,61 @@ router.post('/send', shareLimiter, upload.single('photo'), async (req, res) => {
   }
 });
 
-router.get('/image/:id', (req, res) => {
-  const record = store.getImage(req.params.id);
+function isValidImageId(id) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+}
+
+function getValidRecord(id, res) {
+  if (!isValidImageId(id)) {
+    res.status(400).json({ error: 'Invalid image ID.' });
+    return null;
+  }
+  const record = store.getImage(id);
   if (!record) {
-    return res.status(404).json({ error: 'Image not found or expired.' });
+    res.status(404).json({ error: 'Image not found or expired.' });
+    return null;
   }
-
   if (new Date(record.expiresAt) <= new Date()) {
-    store.deleteImage(req.params.id);
-    return res.status(410).json({ error: 'This image has expired.' });
+    store.deleteImage(id);
+    res.status(410).json({ error: 'This image has expired.' });
+    return null;
   }
-
   if (record.views >= record.maxViews) {
-    return res.status(410).json({ error: 'This image has reached its view limit.' });
+    res.status(410).json({ error: 'This image has reached its view limit.' });
+    return null;
   }
+  return record;
+}
+
+function getValidRecordForFile(id, res) {
+  if (!isValidImageId(id)) {
+    res.status(400).send('Invalid image ID');
+    return null;
+  }
+  const record = store.getImage(id);
+  if (!record) {
+    res.status(404).send('Image not found');
+    return null;
+  }
+  if (new Date(record.expiresAt) <= new Date() || record.views >= record.maxViews) {
+    store.deleteImage(id);
+    res.status(410).send('Image expired');
+    return null;
+  }
+  return record;
+}
+
+function serveImageFile(record, res, { countView = true } = {}) {
+  if (countView) store.incrementViews(record.id);
+  const filePath = path.join(config.uploadDir, record.filename);
+  res.set('Cache-Control', 'private, max-age=3600');
+  res.set('X-Robots-Tag', 'noindex, nofollow');
+  res.type('image/jpeg');
+  res.sendFile(filePath);
+}
+router.get('/image/:id', (req, res) => {
+  const record = getValidRecord(req.params.id, res);
+  if (!record) return;
 
   res.json({
     id: record.id,
@@ -166,22 +207,17 @@ router.get('/image/:id', (req, res) => {
   });
 });
 
+/** Serves image for chat app link previews — does not count as a view. */
+router.get('/image/:id/preview', (req, res) => {
+  const record = getValidRecordForFile(req.params.id, res);
+  if (!record) return;
+  serveImageFile(record, res, { countView: false });
+});
+
 router.get('/image/:id/file', (req, res) => {
-  const record = store.getImage(req.params.id);
-  if (!record) {
-    return res.status(404).send('Image not found');
-  }
-
-  if (new Date(record.expiresAt) <= new Date() || record.views >= record.maxViews) {
-    store.deleteImage(req.params.id);
-    return res.status(410).send('Image expired');
-  }
-
-  store.incrementViews(req.params.id);
-  const filePath = path.join(config.uploadDir, record.filename);
-  res.set('Cache-Control', 'private, max-age=3600');
-  res.set('X-Robots-Tag', 'noindex, nofollow');
-  res.sendFile(filePath);
+  const record = getValidRecordForFile(req.params.id, res);
+  if (!record) return;
+  serveImageFile(record, res, { countView: true });
 });
 
 router.get('/health', (_req, res) => {
