@@ -21,7 +21,33 @@
 
 ---
 
-## 📱 Why ordinary mobile users love this
+## 👋 For non-technical users (start here)
+
+**You do not need to install anything or run any commands.** If someone has put AnywhereMMS online for you, here's all you do:
+
+### On your phone (4 steps)
+
+| Step | What to do |
+|------|------------|
+| **1** | Open the AnywhereMMS **website link** you were given (in Safari or Chrome) |
+| **2** | Tap **Take Photo** or **Choose from Gallery** |
+| **3** | Tap **Create Share Link** |
+| **4** | Tap **Share via Phone** → pick WhatsApp, Messages, or SMS |
+
+That's it. The person you send it to **taps the link** and sees your photo. No app, no signup.
+
+📖 **Full guide with pictures:** open `/how-to.html` on the site (e.g. `https://yoursite.com/how-to.html`)
+
+### Bookmark it on your phone
+
+- **iPhone:** Tap Share → **Add to Home Screen** — works like an app
+- **Android:** Tap ⋮ menu → **Add to Home screen**
+
+### Important note for the person hosting this
+
+Non-technical users need a **live website URL** — they cannot run `npm start` themselves. Deploy once (Render, Railway, Fly.io, etc.) and share that link with everyone.
+
+---
 
 **You don't need to set up SMS APIs or install anything.** AnywhereMMS is built for real people with normal phones:
 

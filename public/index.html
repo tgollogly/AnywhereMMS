@@ -21,10 +21,9 @@
       </a>
       <nav>
         <ul class="nav-links">
-          <li><a href="#send">Send</a></li>
-          <li><a href="#features">Features</a></li>
+          <li><a href="#send">Share Photo</a></li>
+          <li><a href="/how-to.html">How to Use</a></li>
           <li><a href="/privacy.html">Privacy</a></li>
-          <li><a href="/cookies.html">Cookies</a></li>
         </ul>
       </nav>
     </div>
@@ -59,9 +58,14 @@
     </section>
 
     <section id="send" class="camera-section container">
+      <div class="start-here-banner">
+        <p><strong>New here?</strong> No app or account needed — just take a photo and share the link. <a href="/how-to.html">See simple step-by-step guide →</a></p>
+        <a href="/how-to.html" class="btn btn-secondary">How to Use</a>
+      </div>
+
       <div class="card">
-        <h2 class="card-title">📷 Take or Upload a Photo</h2>
-        <p class="card-subtitle">Images are compressed before upload to minimize mobile data usage.</p>
+        <h2 class="card-title">📷 Share a Photo</h2>
+        <p class="card-subtitle">Take a picture or pick one from your gallery. We'll make a link you can paste in any chat app.</p>
 
         <div class="camera-wrapper">
           <video id="cameraPreview" autoplay playsinline muted></video>
@@ -70,14 +74,14 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.827 6.828a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span>Tap "Open Camera" or upload a photo</span>
+            <span>Tap <strong>Take Photo</strong> or <strong>Choose from Gallery</strong></span>
           </div>
         </div>
 
         <div class="camera-controls">
-          <button type="button" id="startCameraBtn" class="btn btn-primary">Open Camera</button>
+          <button type="button" id="startCameraBtn" class="btn btn-primary">Take Photo</button>
           <button type="button" id="captureBtn" class="btn btn-secondary" disabled>Capture</button>
-          <button type="button" id="uploadBtn" class="btn btn-secondary">Upload Photo</button>
+          <button type="button" id="uploadBtn" class="btn btn-secondary">Choose from Gallery</button>
           <button type="button" id="retakeBtn" class="btn btn-danger hidden">Retake</button>
           <input type="file" id="fileInput" accept="image/*" capture="environment" hidden>
         </div>
@@ -103,11 +107,11 @@
         <div id="sendSection" class="hidden" style="margin-top: 1.5rem;">
           <div class="mode-tabs">
             <button type="button" class="mode-tab active" data-mode="link">🔗 Get Link (Easiest)</button>
-            <button type="button" class="mode-tab" data-mode="sms">📱 Auto-Send SMS</button>
+            <button type="button" class="mode-tab" data-mode="sms">📱 Advanced: Auto-SMS</button>
           </div>
 
           <div id="linkMode">
-            <p class="form-hint" style="margin-bottom: 1rem;">Best for most people — copy the link and paste it wherever you already chat (WhatsApp, iMessage, Messenger, email).</p>
+            <p class="form-hint" style="margin-bottom: 1rem;">Tap the button below, then use <strong>Share via Phone</strong> to send in WhatsApp, Messages, or email — or tap <strong>Copy</strong> and paste yourself.</p>
             <button type="button" id="shareLinkBtn" class="btn btn-primary btn-lg">Create Share Link</button>
           </div>
 

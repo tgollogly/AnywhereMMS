@@ -715,6 +715,115 @@ a:hover {
   color: var(--text-muted);
 }
 
+.help-banner {
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0 2rem;
+  font-size: 1rem;
+}
+
+.help-tip {
+  background: rgba(16, 185, 129, 0.12);
+  border-left: 4px solid var(--success);
+  padding: 1rem 1.25rem;
+  margin: 1rem 0 1.5rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.help-steps {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.help-steps li {
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  font-size: 1rem;
+}
+
+.help-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 2rem;
+}
+
+.help-option {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.help-option-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.help-option h3 {
+  font-size: 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.help-option p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.help-faq {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+}
+
+.help-faq summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.help-faq p {
+  margin-top: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.help-cta {
+  text-align: center;
+  margin: 3rem 0 2rem;
+}
+
+.start-here-banner {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(6, 182, 212, 0.15));
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.start-here-banner p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.start-here-banner strong {
+  color: var(--text);
+}
+
+
 
 .hidden {
   display: none !important;
