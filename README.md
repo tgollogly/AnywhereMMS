@@ -165,6 +165,30 @@ npm start
 
 Open **http://localhost:3000** — link sharing works immediately. SMS is optional.
 
+### Verify your download
+
+Official builds are published on [GitHub Releases](https://github.com/tgollogly/AnywhereMMS/releases). Each release includes `SHA256SUMS.txt` and [build provenance attestations](https://docs.github.com/en/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds).
+
+**Windows** (PowerShell or cmd):
+
+```text
+certutil -hashfile FILE SHA256
+```
+
+Compare the output to the matching line in `SHA256SUMS.txt`.
+
+**macOS / Linux**:
+
+```bash
+shasum -a 256 -c SHA256SUMS.txt
+```
+
+**Provenance** ([GitHub CLI](https://cli.github.com/) with `gh` installed):
+
+```bash
+gh attestation verify FILE --repo tgollogly/AnywhereMMS
+```
+
 ### Environment Variables
 
 | Variable | Default | Description |
