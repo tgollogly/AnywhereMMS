@@ -65,6 +65,10 @@ jobs:
           if [ ! -s "$NOTES_FILE" ]; then
             echo "Release ${GITHUB_REF_NAME}" > "$NOTES_FILE"
           fi
+          {
+            echo ""
+            echo "🔒 These files are sealed: SHA-256 checksums in SHA256SUMS.txt plus GitHub build attestations. See the README \"Verify your download\" section to check them."
+          } >> "$NOTES_FILE"
           echo "path=$NOTES_FILE" >> "$GITHUB_OUTPUT"
 
       - name: Publish GitHub Release
