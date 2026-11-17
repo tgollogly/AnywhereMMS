@@ -7,6 +7,12 @@
 <h1 align="center">📸 AnywhereMMS</h1>
 
 <p align="center">
+  <a href="#verify-your-download">
+    <img src="https://img.shields.io/badge/releases-signed%20%26%20verifiable-brightgreen" alt="Signed releases"/>
+  </a>
+</p>
+
+<p align="center">
   <strong>Snap a photo → get a link → paste it in any chat. Done.</strong><br/>
   Free photo sharing for ordinary phone users — no app, no signup, no hassle.
 </p>
